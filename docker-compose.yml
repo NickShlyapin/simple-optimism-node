@@ -4,6 +4,10 @@ services:
   l2geth:
     image: ethereumoptimism/l2geth:${IMAGE_TAG__L2GETH:-latest}
     restart: on-failure
+    volumes:
+      - /media/d2/Optimism/.optimism:/root/.optimism:rw
+      - geth:/geth
+      - ./scripts/:/scripts/
     stop_grace_period: 5m
     entrypoint:
       - /bin/sh
@@ -12,17 +16,6 @@ services:
     env_file:
       - ./envs/common/l2geth.env
       - .env
-    volumes:
-      - geth:/geth
-      - ./scripts/:/scripts/
     ports:
       - ${PORT__L2GETH_HTTP:-9991}:8545
       - ${PORT__L2GETH_WS:-9992}:8546
-
-volumes:
-  geth:
-    driver: local
-    driver_opts:
-      type: none
-      device: /media/d2/Optimism
-      o: bind
