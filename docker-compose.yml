@@ -1,9 +1,11 @@
+version: '3.8'
+
 services:
   l2geth:
     image: ethereumoptimism/l2geth:${IMAGE_TAG__L2GETH:-latest}
     restart: on-failure
     stop_grace_period: 5m
-    entrypoint: 
+    entrypoint:
       - /bin/sh
       - -c
       - "/scripts/init-l2geth.sh && /scripts/start-l2geth.sh"
@@ -11,8 +13,8 @@ services:
       - ./envs/common/l2geth.env
       - .env
     volumes:
-      - geth:/geth
-      - ./scripts/:/scripts/
+      - /media/d2/Optimistic/geth:/geth
+      - /media/d2/Optimistic/scripts:/scripts
     ports:
       - ${PORT__L2GETH_HTTP:-9991}:8545
       - ${PORT__L2GETH_WS:-9992}:8546
@@ -35,10 +37,9 @@ services:
       - ./envs/${NETWORK_NAME}/op-geth.env
       - .env
     volumes:
-      - ./envs/${NETWORK_NAME}/config:/chainconfig
-      - ./scripts/:/scripts
-      - shared:/shared
-      - op_geth:/geth
+      - /media/d2/Optimistic/envs/${NETWORK_NAME}/config:/chainconfig
+      - /media/d2/Optimistic/scripts:/scripts
+      - /media/d2/Optimistic/shared:/shared
     ports:
       - ${PORT__OP_GETH_HTTP:-9993}:8545
       - ${PORT__OP_GETH_WS:-9994}:8546
@@ -56,9 +57,9 @@ services:
       - ./envs/${NETWORK_NAME}/op-node.env
       - .env
     volumes:
-      - ./envs/${NETWORK_NAME}/config:/chainconfig
-      - ./scripts/:/scripts
-      - shared:/shared
+      - /media/d2/Optimistic/envs/${NETWORK_NAME}/config:/chainconfig
+      - /media/d2/Optimistic/scripts:/scripts
+      - /media/d2/Optimistic/shared:/shared
     ports:
       - ${PORT__OP_NODE_P2P:-9003}:9003/udp
       - ${PORT__OP_NODE_P2P:-9003}:9003/tcp
@@ -75,11 +76,11 @@ services:
       - ./envs/${NETWORK_NAME}/op-geth.env
       - .env
     volumes:
-      - ./scripts/:/scripts
-      - shared:/shared
-      - op_geth:/geth
-      - geth:/legacy-geth
-      - torrent_downloads:/downloads
+      - /media/d2/Optimistic/scripts:/scripts
+      - /media/d2/Optimistic/shared:/shared
+      - /media/d2/Optimistic/op_geth:/geth
+      - /media/d2/Optimistic/geth:/legacy-geth
+      - /media/d2/Optimistic/torrent_downloads:/downloads
 
   prometheus:
     image: prom/prometheus:${IMAGE_TAG__PROMETHEUS:-latest}
@@ -87,7 +88,7 @@ services:
     env_file:
       - .env
     volumes:
-      - ./docker/prometheus:/etc/prometheus
+      - /media/d2/Optimistic/docker/prometheus:/etc/prometheus
       - prometheus_data:/prometheus
     ports:
       - ${PORT__PROMETHEUS:-9090}:9090
@@ -96,10 +97,10 @@ services:
     image: grafana/grafana:${IMAGE_TAG__GRAFANA:-9.3.0}
     restart: unless-stopped
     env_file:
-      -  ./envs/common/grafana.env
+      - ./envs/common/grafana.env
     volumes:
-      - ./docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
-      - ./docker/grafana/dashboards/simple_node_dashboard.json:/var/lib/grafana/dashboards/simple_node_dashboard.json
+      - /media/d2/Optimistic/docker/grafana/provisioning/:/etc/grafana/provisioning/:ro
+      - /media/d2/Optimistic/docker/grafana/dashboards/simple_node_dashboard.json:/var/lib/grafana/dashboards/simple_node_dashboard.json
       - grafana_data:/var/lib/grafana
     ports:
       - ${PORT__GRAFANA:-3000}:3000
@@ -110,14 +111,12 @@ services:
     env_file:
       - ./envs/common/influxdb.env
     volumes:
-      - ./docker/influxdb/influx_init.iql:/docker-entrypoint-initdb.d/influx_init.iql
+      - /media/d2/Optimistic/docker/influxdb/influx_init.iql:/docker-entrypoint-initdb.d/influx_init.iql
       - influxdb_data:/var/lib/influxdb
     ports:
       - ${PORT__INFLUXDB:-8086}:8086
 
 volumes:
-  dtl:
-  geth:
   prometheus_data:
   grafana_data:
   influxdb_data:
