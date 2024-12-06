@@ -1,4 +1,3 @@
-version: "3.4"
 services:
   l2geth:
     image: ethereumoptimism/l2geth:${IMAGE_TAG__L2GETH:-latest}
