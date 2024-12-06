@@ -1,16 +1,35 @@
 FROM ubuntu:23.10
 
-# Disable prompts during package installation.
+# Отключаем интерактивные запросы при установке пакетов
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install required packages.
-RUN apt-get update && apt install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4
+# Настройка DNS (для устранения проблем с подключением)
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-# Install Go.
-RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
-RUN cp /usr/local/go/bin/go /usr/bin/go
+# Обновляем и устанавливаем необходимые пакеты с проверкой ошибок
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4 || { \
+    echo "apt-get update/install failed"; tail -n 10 /var/log/apt/term.log; exit 1; } && \
+    rm -rf /var/lib/apt/lists/* # Очистка кэша apt
 
-# Install Foundry.
-RUN curl -L https://foundry.paradigm.xyz | bash
-RUN /root/.foundry/bin/foundryup
-RUN rsync -a /root/.foundry/bin/ /usr/bin/
+# Устанавливаем Go
+RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz && \
+    cp /usr/local/go/bin/go /usr/bin/go
+
+# Устанавливаем Foundry
+RUN curl -L https://foundry.paradigm.xyz | bash && \
+    /root/.foundry/bin/foundryup && \
+    rsync -a /root/.foundry/bin/ /usr/bin/
+
+# Создаем рабочую директорию для скриптов и данных
+WORKDIR /data/compose
+
+# Применяем настройки
+COPY . /data/compose
+
+# Открываем порты (укажите необходимые порты)
+EXPOSE 8545 8546
+
+# Указываем команду для запуска контейнера
+CMD ["/bin/bash"]
