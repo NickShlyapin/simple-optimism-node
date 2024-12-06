@@ -116,11 +116,45 @@ services:
       - ${PORT__INFLUXDB:-8086}:8086
 
 volumes:
-  dtl:
   geth:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   prometheus_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   influxdb_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   shared:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   op_geth:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
   torrent_downloads:
+    driver: local
+    driver_opts:
+      type: none
+      device: /media/d2/Optimism
+      o: bind
