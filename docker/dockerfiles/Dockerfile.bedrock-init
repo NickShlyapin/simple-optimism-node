@@ -3,15 +3,14 @@ FROM ubuntu:23.10
 # Отключаем интерактивные запросы при установке пакетов
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Устанавливаем настройки DNS с правами root
+# Получаем права суперпользователя
 USER root
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
 
-# Обновляем и устанавливаем необходимые пакеты с проверкой ошибок
-RUN apt-get update -y && \
-    apt-get upgrade -y && \
-    apt-get install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4 || { \
-    echo "apt-get update/install failed"; tail -n 10 /var/log/apt/term.log; exit 1; } && \
+# Устанавливаем настройки DNS
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || { echo "Failed to set DNS"; exit 1; }
+
+# Обновляем и устанавливаем необходимые пакеты
+RUN apt-get update -y && apt-get install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4 || { echo "apt-get install failed"; exit 1; } && \
     rm -rf /var/lib/apt/lists/* # Очистка кэша apt
 
 # Устанавливаем Go
