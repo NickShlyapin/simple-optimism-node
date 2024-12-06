@@ -3,14 +3,20 @@ FROM ubuntu:23.10
 # Disable prompts during package installation.
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Install required packages.
-# RUN apt-get update && apt install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4
+# Update apt and install required packages.
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
+    curl wget git rsync build-essential openssl python3 python3-pip \
+    aria2 zstd lz4 && rm -rf /var/lib/apt/lists/*
 
 # Install Go.
-RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
-RUN cp /usr/local/go/bin/go /usr/bin/go
+RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz -o go1.21.6.linux-amd64.tar.gz && \
+    tar -v -C /usr/local -xz -f go1.21.6.linux-amd64.tar.gz && \
+    cp /usr/local/go/bin/go /usr/bin/go
 
 # Install Foundry.
-RUN curl -L https://foundry.paradigm.xyz | bash
+RUN curl -L https://foundry.paradigm.xyz | bash -v
 RUN /root/.foundry/bin/foundryup
 RUN rsync -a /root/.foundry/bin/ /usr/bin/
+
+# Optional: Set DNS to Google DNS (in case of network issues).
+RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
