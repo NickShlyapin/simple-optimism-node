@@ -2,11 +2,3 @@ FROM ubuntu:23.10
 
 # Disable prompts during package installation.
 ARG DEBIAN_FRONTEND=noninteractive
-
-# Install Foundry.
-RUN curl -L https://foundry.paradigm.xyz | bash -v
-RUN /root/.foundry/bin/foundryup
-RUN rsync -a /root/.foundry/bin/ /usr/bin/
-
-# Optional: Set DNS to Google DNS (in case of network issues).
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf
