@@ -1,35 +1,16 @@
 FROM ubuntu:23.10
 
-# Отключаем интерактивные запросы при установке пакетов
+# Disable prompts during package installation.
 ARG DEBIAN_FRONTEND=noninteractive
 
-# Получаем права суперпользователя
-USER root
+# Install required packages.
+RUN apt-get update && apt install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4
 
-# Устанавливаем настройки DNS
-RUN echo "nameserver 8.8.8.8" > /etc/resolv.conf || { echo "Failed to set DNS"; exit 1; }
+# Install Go.
+RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz
+RUN cp /usr/local/go/bin/go /usr/bin/go
 
-# Обновляем и устанавливаем необходимые пакеты
-RUN apt-get update -y && apt-get install -y curl wget git rsync build-essential openssl python3 python3-pip aria2 zstd lz4 || { echo "apt-get install failed"; exit 1; } && \
-    rm -rf /var/lib/apt/lists/* # Очистка кэша apt
-
-# Устанавливаем Go
-RUN curl -sSL https://golang.org/dl/go1.21.6.linux-amd64.tar.gz | tar -v -C /usr/local -xz && \
-    cp /usr/local/go/bin/go /usr/bin/go
-
-# Устанавливаем Foundry
-RUN curl -L https://foundry.paradigm.xyz | bash && \
-    /root/.foundry/bin/foundryup && \
-    rsync -a /root/.foundry/bin/ /usr/bin/
-
-# Создаем рабочую директорию для скриптов и данных
-WORKDIR /data/compose
-
-# Применяем настройки
-COPY . /data/compose
-
-# Открываем порты (укажите необходимые порты)
-EXPOSE 8545 8546
-
-# Указываем команду для запуска контейнера
-CMD ["/bin/bash"]
+# Install Foundry.
+RUN curl -L https://foundry.paradigm.xyz | bash
+RUN /root/.foundry/bin/foundryup
+RUN rsync -a /root/.foundry/bin/ /usr/bin/
