@@ -120,41 +120,41 @@ volumes:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/geth
       o: bind
   prometheus_data:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/prometheus_data
       o: bind
   grafana_data:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/grafana_data
       o: bind
   influxdb_data:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/influxdb_data
       o: bind
   shared:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/shared
       o: bind
   op_geth:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/op_geth
       o: bind
   torrent_downloads:
     driver: local
     driver_opts:
       type: none
-      device: /media/d2/Optimism
+      device: /media/d2/Optimism/torrent_downloads
       o: bind
